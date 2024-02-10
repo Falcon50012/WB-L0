@@ -13,31 +13,31 @@ func init() {
 	database.InitDBConnectionPool()
 	err := database.CreateTables()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error creating tables: %v", err)
 	}
-	subscriber.RestoreCache()
+
+	err = subscriber.RestoreCache()
+	if err != nil {
+		log.Printf("Error while restoring cache: %v", err)
+	}
 }
 
 func main() {
-	log.Println(my_cache.OrderCache)
-	r := router.InitRoutes()
-
 	log.Println("Running Server and Subscriber")
 
 	go func() {
-		subscriber.Subscribe()
+		err := subscriber.Subscribe()
+		if err != nil {
+			log.Printf("Error when starting subscriber: %v", err)
+		}
 	}()
 
-	//subscriber.Subscribe()
+	r := router.InitRoutes()
 
-	if err := r.Run(); err != nil {
-		log.Fatalf("Ошибка при запуске веб-сервера: %v", err)
+	err := r.Run()
+	if err != nil {
+		log.Fatalf("Error starting web-server: %v", err)
 	}
+
 	subscriber.StopSubscribe()
 }
-
-//err := r.Run("127.0.0.1:8080")
-//if err != nil {
-//	return
-//}
-//}
