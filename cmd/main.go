@@ -16,7 +16,7 @@ func init() {
 		log.Fatalf("Error creating tables: %v", err)
 	}
 
-	err = subscriber.RestoreCache()
+	err = database.RestoreCache()
 	if err != nil {
 		log.Printf("Error while restoring cache: %v", err)
 	}
